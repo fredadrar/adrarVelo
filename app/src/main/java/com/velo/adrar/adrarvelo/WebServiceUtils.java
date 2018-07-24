@@ -37,7 +37,7 @@ public class WebServiceUtils {
 
     public static Object getRoutePolyline(Location location, VeloStation veloStation, Options options) throws Exception {
 
-        String urlRoute = GET_ROUTE_BASE_URL + "origin=" + location.getLatitude() + "," + location.getLongitude() + "&destination=" + veloStation.getPosition().latitude + "," + veloStation.getPosition().longitude + "&key=AIzaSyCf8XsWGw8u3VDjawF_NADoPrlXkHWAc3s";
+        String urlRoute = GET_ROUTE_BASE_URL + "origin=" + location.getLatitude() + "," + location.getLongitude() + "&destination=" + veloStation.getPosition().latitude + "," + veloStation.getPosition().longitude;
         if (options.getMode() == ON_FOOT_MODE) {
             urlRoute += "&mode=walking";
         } else if (options.getMode() == ON_BIKE_MODE) {
