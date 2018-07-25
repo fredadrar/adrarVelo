@@ -1,5 +1,7 @@
 package com.velo.adrar.adrarvelo;
 
+import com.google.maps.android.geometry.Bounds;
+
 import java.util.ArrayList;
 
 public class RoutePolyline {
@@ -8,12 +10,6 @@ public class RoutePolyline {
 
     public String getStatus() {
         return this.status;
-    }
-
-    private ArrayList<GeocodedWaypoint> geocoded_waypoints;
-
-    public ArrayList<GeocodedWaypoint> getGeocodedWaypoints() {
-        return this.geocoded_waypoints;
     }
 
     private ArrayList<Route> routes;
@@ -25,22 +21,10 @@ public class RoutePolyline {
 
 class Route {
 
-    private String summary;
-
-    public String getSummary() {
-        return this.summary;
-    }
-
     private ArrayList<Leg> legs;
 
     public ArrayList<Leg> getLegs() {
         return this.legs;
-    }
-
-    private String copyrights;
-
-    public String getCopyrights() {
-        return this.copyrights;
     }
 
     private OverviewPolyline overview_polyline;
@@ -56,93 +40,48 @@ class Route {
     }
 }
 
-class GeocodedWaypoint {
+class Leg {
 
-    private String geocoder_status;
+    private ArrayList<Step> steps;
 
-    public String getGeocoderStatus() {
-        return this.geocoder_status;
+    public ArrayList<Step> getSteps() {
+        return this.steps;
     }
 
-    private String place_id;
+    private Duration duration;
 
-    public String getPlaceId() {
-        return this.place_id;
+    public Duration getDuration() {
+        return this.duration;
     }
 
-    private ArrayList<String> types;
+    private Distance distance;
 
-    public ArrayList<String> getTypes() {
-        return this.types;
-    }
-}
-
-class StartLocation {
-
-    private double lat;
-
-    public double getLat() {
-        return this.lat;
+    public Distance getDistance() {
+        return this.distance;
     }
 
-    private double lng;
+    private StartLocation start_location;
 
-    public double getLng() {
-        return this.lng;
-    }
-}
-
-class EndLocation {
-
-    private double lat;
-
-    public double getLat() {
-        return this.lat;
+    public StartLocation getStartLocation() {
+        return this.start_location;
     }
 
-    private double lng;
+    private EndLocation end_location;
 
-    public double getLng() {
-        return this.lng;
-    }
-}
-
-class Polyline {
-
-    private String points;
-
-    public String getPoints() {
-        return this.points;
-    }
-}
-
-class Duration {
-
-    private int value;
-
-    public int getValue() {
-        return this.value;
+    public EndLocation getEndLocation() {
+        return this.end_location;
     }
 
-    private String text;
+    private String start_address;
 
-    public String getText() {
-        return this.text;
-    }
-}
-
-class Distance {
-
-    private int value;
-
-    public int getValue() {
-        return this.value;
+    public String getStartAddress() {
+        return this.start_address;
     }
 
-    private String text;
+    private String end_address;
 
-    public String getText() {
-        return this.text;
+    public String getEndAddress() {
+        return this.end_address;
     }
 }
 
@@ -191,37 +130,16 @@ class Step {
     }
 }
 
-class Duration2 {
+class Polyline {
 
-    private int value;
+    private String points;
 
-    public int getValue() {
-        return this.value;
-    }
-
-    private String text;
-
-    public String getText() {
-        return this.text;
+    public String getPoints() {
+        return this.points;
     }
 }
 
-class Distance2 {
-
-    private int value;
-
-    public int getValue() {
-        return this.value;
-    }
-
-    private String text;
-
-    public String getText() {
-        return this.text;
-    }
-}
-
-class StartLocation2 {
+class StartLocation {
 
     private double lat;
 
@@ -236,7 +154,7 @@ class StartLocation2 {
     }
 }
 
-class EndLocation2 {
+class EndLocation {
 
     private double lat;
 
@@ -251,48 +169,33 @@ class EndLocation2 {
     }
 }
 
-class Leg {
+class Duration {
 
-    private ArrayList<Step> steps;
+    private int value;
 
-    public ArrayList<Step> getSteps() {
-        return this.steps;
+    public int getValue() {
+        return this.value;
     }
 
-    private Duration2 duration;
+    private String text;
 
-    public Duration2 getDuration() {
-        return this.duration;
+    public String getText() {
+        return this.text;
+    }
+}
+
+class Distance {
+
+    private int value;
+
+    public int getValue() {
+        return this.value;
     }
 
-    private Distance2 distance;
+    private String text;
 
-    public Distance2 getDistance() {
-        return this.distance;
-    }
-
-    private StartLocation2 start_location;
-
-    public StartLocation2 getStartLocation() {
-        return this.start_location;
-    }
-
-    private EndLocation2 end_location;
-
-    public EndLocation2 getEndLocation() {
-        return this.end_location;
-    }
-
-    private String start_address;
-
-    public String getStartAddress() {
-        return this.start_address;
-    }
-
-    private String end_address;
-
-    public String getEndAddress() {
-        return this.end_address;
+    public String getText() {
+        return this.text;
     }
 }
 
@@ -302,51 +205,6 @@ class OverviewPolyline {
 
     public String getPoints() {
         return this.points;
-    }
-}
-
-class Southwest {
-
-    private double lat;
-
-    public double getLat() {
-        return this.lat;
-    }
-
-    private double lng;
-
-    public double getLng() {
-        return this.lng;
-    }
-}
-
-class Northeast {
-
-    private double lat;
-
-    public double getLat() {
-        return this.lat;
-    }
-
-    private double lng;
-
-    public double getLng() {
-        return this.lng;
-    }
-}
-
-class Bounds {
-
-    private Southwest southwest;
-
-    public Southwest getSouthwest() {
-        return this.southwest;
-    }
-
-    private Northeast northeast;
-
-    public Northeast getNortheast() {
-        return this.northeast;
     }
 }
 

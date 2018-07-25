@@ -208,7 +208,6 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     }
 
     // ASYNC TASK pour la polyline.
-    //
     private class GetRoutePolylineAT extends AsyncTask {
 
         private VeloStation veloStation;
@@ -242,7 +241,6 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     }
 
     // ASYNC TASK pour la liste des stations.
-    //
     private class GetVeloStationsAT extends AsyncTask {
 
         Exception exception;
@@ -356,9 +354,9 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 // Décision de la couleur des icônes en fonction du mode (à pied ou en vélo).
                 if ((options.getMode() == ON_FOOT_MODE && stationVelo.getAvailable_bikes() == 0)
                         || (options.getMode() == ON_BIKE_MODE && stationVelo.getAvailable_bike_stands() == 0)) {
-                    markerVelo.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_circle_holo_red));
+                    markerVelo.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_arrow_red));
                 } else {
-                    markerVelo.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_circle_holo_green));
+                    markerVelo.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_arrow_green));
                 }
 
                 mMap.addMarker(markerVelo).setTag(stationVelo);

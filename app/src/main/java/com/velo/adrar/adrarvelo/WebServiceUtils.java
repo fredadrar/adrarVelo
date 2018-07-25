@@ -16,8 +16,8 @@ import static com.velo.adrar.adrarvelo.MapsActivity.ON_FOOT_MODE;
 
 public class WebServiceUtils {
 
-    private static String GET_VELO_URL = "https://api.jcdecaux.com/vls/v1/stations?contract=Toulouse&apiKey=edd6eedab27fb3e48b84d4e68fd57e648ccc0432";
-    static final String GET_ROUTE_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
+    private static final String GET_VELO_URL = "https://api.jcdecaux.com/vls/v1/stations?contract=Toulouse&apiKey=edd6eedab27fb3e48b84d4e68fd57e648ccc0432";
+    private static final String GET_ROUTE_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
 
     private static Gson gson = new Gson();
 
@@ -29,8 +29,9 @@ public class WebServiceUtils {
         }.getType());
 
         for (VeloStation station : stations) {
-            String substr = station.getName().substring(station.getName().indexOf("-") + 1).trim();
-            station.setName(substr);
+            station.setName(
+                    station.getName().substring(station.getName().indexOf("-") + 1).trim()
+            );
             station.setLogo(R.drawable.ic_velo);
         }
         return stations;
@@ -38,7 +39,9 @@ public class WebServiceUtils {
 
     public static String getRoutePolyline(Location location, VeloStation veloStation, Options options) throws Exception {
 
-        String urlRoute = GET_ROUTE_BASE_URL + "origin=" + location.getLatitude() + "," + location.getLongitude() + "&destination=" + veloStation.getPosition().latitude + "," + veloStation.getPosition().longitude;
+        String urlRoute = GET_ROUTE_BASE_URL
+                + "origin=" + location.getLatitude() + "," + location.getLongitude()
+                + "&destination=" + veloStation.getPosition().latitude + "," + veloStation.getPosition().longitude;
         if (options.getMode() == ON_FOOT_MODE) {
             urlRoute += "&mode=walking";
         } else if (options.getMode() == ON_BIKE_MODE) {
@@ -49,8 +52,10 @@ public class WebServiceUtils {
         InputStreamReader isr = new InputStreamReader(response.body().byteStream());
         RoutePolyline routePolyline = gson.fromJson(isr, RoutePolyline.class);
 
-        Log.w("testo", response.toString());
-        Log.w("testo", routePolyline.getRoutes().toString());
+//        Log.w("testo", response.toString());
+//        Log.w("testo", routePolyline.toString());
+//        Log.w("testo", routePolyline.getRoutes().toString());
+        Log.w("testo", routePolyline.getStatus());
 
         return routePolyline.getRoutes().get(0).getOverviewPolyline().getPoints();
     }
