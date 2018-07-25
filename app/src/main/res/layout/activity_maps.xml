@@ -29,7 +29,6 @@
         android:layout_height="wrap_content"
         android:background="@color/colorRed"
         android:padding="10dp"
-        android:text="Name"
         android:textColor="@android:color/white"
         android:visibility="gone" />
 
@@ -46,6 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:backgroundTint="@android:color/holo_blue_light"
+            android:contentDescription="@string/refresh_button"
             android:src="@mipmap/ic_icon_refresh" />
 
         <ImageButton
@@ -54,6 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:backgroundTint="@color/colorGreen"
+            android:contentDescription="@string/mode_button"
             android:src="@mipmap/ic_icon_walking" />
 
         <ProgressBar

@@ -1,7 +1,6 @@
 package com.velo.adrar.adrarvelo;
 
 import android.location.Location;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -51,11 +50,6 @@ public class WebServiceUtils {
         Response response = OkHttpUtils.sendGetOkHttpRequest(urlRoute);
         InputStreamReader isr = new InputStreamReader(response.body().byteStream());
         RoutePolyline routePolyline = gson.fromJson(isr, RoutePolyline.class);
-
-//        Log.w("testo", response.toString());
-//        Log.w("testo", routePolyline.toString());
-//        Log.w("testo", routePolyline.getRoutes().toString());
-        Log.w("testo", routePolyline.getStatus());
 
         return routePolyline.getRoutes().get(0).getOverviewPolyline().getPoints();
     }

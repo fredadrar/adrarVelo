@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">VeloFinder</string>
     <string name="title_activity_maps">VeloFinder</string>
-    <string name="error_activity_text">VeloFinder a besoin d\'un accès à internet pour fonctionner !</string>
-
+    <string name="mode_button">Mode de déplacement</string>
+    <string name="refresh_button">Actualiser</string>
+    <string name="logo_description">Logo de la station</string>
 </resources>

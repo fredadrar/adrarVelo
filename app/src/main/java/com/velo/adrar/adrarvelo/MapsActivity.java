@@ -144,7 +144,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         return null;
     }
 
-    // Click sur un marqueur pour faire apparaitre une fenêtre d'info et la polyline de la route.
+    // Click sur un marqueur : faire apparaitre une fenêtre d'info.
     @Override
     public View getInfoContents(Marker marker) {
 
@@ -165,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         return view;
     }
 
-    // Click sur une fenêtre d'info.
+    // Click sur une fenêtre d'info : faire apparaitre la polyline de la route.
     @Override
     public void onInfoWindowClick(Marker marker) {
 
@@ -274,6 +274,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+    // Update la liste des stations à afficher.
     public void filterStationsToDisplay() {
 
         veloStationsToDisplay.clear();
@@ -325,6 +326,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         refreshMap();
     }
 
+    // Actualise les éléments de la map.
     public void refreshMap() {
         refreshScreen();
         // Si la map n'est pas là, on ne fait rien.
@@ -374,6 +376,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+    // Actualise le message d'erreur éventuel, et l'apparence du bouton Mode.
     public void refreshScreen() {
         //Gestion message d'erreur.
         if (erreurException != null) {

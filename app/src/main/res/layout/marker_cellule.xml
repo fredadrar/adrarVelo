@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
+        android:contentDescription="@string/logo_description"
         app:srcCompat="@mipmap/ic_launcher" />
 
     <LinearLayout
@@ -22,22 +23,19 @@
             android:id="@+id/textAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="TextView" />
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/textStands"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="TextView" />
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/textBikes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="TextView" />
+            android:gravity="center" />
     </LinearLayout>
 
 </LinearLayout>

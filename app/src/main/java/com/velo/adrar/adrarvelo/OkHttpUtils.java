@@ -14,9 +14,9 @@ import okhttp3.Response;
 
 public class OkHttpUtils {
 
-    public static Response sendGetOkHttpRequest(String url) throws Exception {
+    static Response sendGetOkHttpRequest(String url) throws Exception {
 
-        if(!isInternetConnexion(VeloApplication.getVeloApplication())) {
+        if (!isInternetConnexion(VeloApplication.getVeloApplication())) {
             throw new Exception("Vous n'êtes pas connecté à internet");
         }
 
@@ -43,8 +43,7 @@ public class OkHttpUtils {
 //            return response.body().string();
                 return response;
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             throw new Exception("Erreur lors de la récupération des données, bande passante insuffisante", e);
         }
     }
