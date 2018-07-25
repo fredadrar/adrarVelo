@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -19,12 +18,10 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,7 +41,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements View.OnClickListener, OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MapsActivity extends FragmentActivity implements View.OnClickListener, OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener {
 
     //Constantes
     static final int ON_FOOT_MODE = 1;
@@ -54,8 +51,9 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private GoogleMap mMap;
     private ImageButton bt_go;
     private ImageButton bt_switch_mode;
-    private ImageButton bt_choose_address;
     private NumberPicker numberPicker;
+    private TextView tvError;
+    private ProgressBar loading_icon;
 
     //data
     private ArrayList<VeloStation> veloStations;
@@ -64,24 +62,25 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private Location location;
     private Criteria criteria;
     private List<LatLng> listeWaypoints;
+    private Exception erreurException;
+    private int btModeIcon;
 
     private GetVeloStationsAT getVeloStationsAT = null;
     private GetRoutePolylineAT getRoutePolylineAT = null;
     private LocationManager locationMgr;
-
-    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        tvError = findViewById(R.id.tvError);
         bt_go = findViewById(R.id.bt_go);
-        bt_go.setOnClickListener(this);
         bt_switch_mode = findViewById(R.id.bt_switch_mode);
+        loading_icon = findViewById(R.id.loading_icon);
+
+        bt_go.setOnClickListener(this);
         bt_switch_mode.setOnClickListener(this);
-        bt_choose_address = findViewById(R.id.bt_choose_address);
-        bt_choose_address.setOnClickListener(this);
 
         // NumberPicker du nombre de stations à afficher.
         numberPicker = findViewById(R.id.numberPicker);
@@ -95,6 +94,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         criteria = new Criteria();
 
         numberPicker.setValue(options.getNearbyNumber());
+        btModeIcon = R.mipmap.ic_icon_walking;
+
         locationMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -108,12 +109,9 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 25);
         }
 
-        //Initializing googleApiClient
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        // On lance la requête pour la liste de stations.
+        getVeloStationsAT = new GetVeloStationsAT();
+        getVeloStationsAT.execute();
 
         // Listener pour le NumberPicker
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -133,34 +131,12 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             filterStationsToDisplay();
         }
     }
-//
-//    // Inscription / désinscription au Bus.
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        BusApplication.getBus().register(this);
-//    }
-
-//    @Subscribe
-//    public void triggersWhenLocationIsPosted(Location location) {
-//        myPosition = new LatLng(location.getLatitude(), location.getLongitude());
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        BusApplication.getBus().unregister(this);
-//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setInfoWindowAdapter(this);
         mMap.setOnInfoWindowClickListener(this);
-
-        // On lance la requête pour la liste de stations.
-        getVeloStationsAT = new GetVeloStationsAT();
-        getVeloStationsAT.execute();
     }
 
     @Override
@@ -196,10 +172,15 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         VeloStation veloStation = (VeloStation) marker.getTag();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            location = locationMgr.getLastKnownLocation(locationMgr.getBestProvider(criteria, false));
 
-            getRoutePolylineAT = new GetRoutePolylineAT(veloStation);
-            getRoutePolylineAT.execute();
+            location = locationMgr.getLastKnownLocation(locationMgr.getBestProvider(criteria, true));
+
+            if (location != null) {
+                getRoutePolylineAT = new GetRoutePolylineAT(veloStation);
+                getRoutePolylineAT.execute();
+            } else {
+                Toast.makeText(this, "Localisation non accessible", Toast.LENGTH_SHORT).show();
+            }
         }
 
         marker.hideInfoWindow();
@@ -207,36 +188,23 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
+        erreurException = null;
+        refreshScreen();
         if (v == bt_go) {
             getVeloStationsAT = new GetVeloStationsAT();
             getVeloStationsAT.execute();
         } else if (v == bt_switch_mode) {
             if (options.getMode() == ON_FOOT_MODE) {
                 options.setMode(ON_BIKE_MODE);
-                bt_switch_mode.setImageResource(R.mipmap.ic_icon_bike);
+                btModeIcon = R.mipmap.ic_icon_bike;
                 Toast.makeText(this, "Mode Vélo : les stations sans places libres sont affichées en rouge", Toast.LENGTH_SHORT).show();
             } else if (options.getMode() == ON_BIKE_MODE) {
                 options.setMode(ON_FOOT_MODE);
-                bt_switch_mode.setImageResource(R.mipmap.ic_icon_walking);
+                btModeIcon = R.mipmap.ic_icon_walking;
                 Toast.makeText(this, "Mode Piéton : les stations sans vélos sont affichées en rouge", Toast.LENGTH_SHORT).show();
             }
             refreshMap();
         }
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 
     // ASYNC TASK pour la polyline.
@@ -246,8 +214,13 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         private VeloStation veloStation;
 
         public GetRoutePolylineAT(VeloStation veloStation) {
-
             this.veloStation = veloStation;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loading_icon.setVisibility(View.VISIBLE);
         }
 
         protected Object doInBackground(Object[] objects) {
@@ -264,6 +237,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 listeWaypoints = PolyUtil.decode((String) resultat);
                 refreshMap();
             }
+            loading_icon.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -271,20 +245,33 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     //
     private class GetVeloStationsAT extends AsyncTask {
 
+        Exception exception;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loading_icon.setVisibility(View.VISIBLE);
+        }
+
         protected Object doInBackground(Object[] objects) {
             try {
                 return WebServiceUtils.getVeloStations();
             } catch (Exception e) {
+                exception = e;
                 e.printStackTrace();
             }
             return null;
         }
 
         protected void onPostExecute(Object resultat) {
+            if (exception != null) {
+                erreurException = exception;
+            }
             if (resultat != null) {
                 veloStations.clear();
                 veloStations.addAll((Collection<? extends VeloStation>) resultat);
             }
+            loading_icon.setVisibility(View.INVISIBLE);
             filterStationsToDisplay();
         }
     }
@@ -300,7 +287,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             // On récupère les dernières coordonnées connues.
             location = locationMgr.getLastKnownLocation(locationMgr.getBestProvider(criteria, false));
 
-            if (location != null) {
+            if (location != null && veloStations.size() >= options.getNearbyNumber()) {
 
                 // Pour chaque station de la liste complète :
                 for (VeloStation station : veloStations) {
@@ -341,6 +328,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     }
 
     public void refreshMap() {
+        refreshScreen();
         // Si la map n'est pas là, on ne fait rien.
         if (mMap == null) {
             return;
@@ -352,11 +340,11 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         if (listeWaypoints != null) {
             mMap.addPolyline(new PolylineOptions()
                     .addAll(listeWaypoints)
-                    .width(5)
-                    .color(Color.RED));
+                    .width(8)
+                    .color(Color.MAGENTA));
         }
 
-        if (veloStationsToDisplay != null) {
+        if (!veloStationsToDisplay.isEmpty()) {
 
             // Construction des marqueurs et préparation du zoom général.
             LatLngBounds.Builder latLngBounds = new LatLngBounds.Builder();
@@ -377,17 +365,27 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 // On rajoute ces coordonnées à la liste pour le zoom général.
                 latLngBounds.include(stationVelo.getPosition());
             }
-            Criteria criteria = new Criteria();
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                Location location = locationMgr.getLastKnownLocation(locationMgr.getBestProvider(criteria, false));
+                location = locationMgr.getLastKnownLocation(locationMgr.getBestProvider(criteria, false));
                 if (location != null) {
                     latLngBounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
                 }
             }
-
             // On effectue le zoom/recentrage de la vue.
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 150));
         }
     }
-}
 
+    public void refreshScreen() {
+        //Gestion message d'erreur.
+        if (erreurException != null) {
+            tvError.setText(erreurException.getMessage());
+            tvError.setVisibility(View.VISIBLE);
+        } else {
+            tvError.setVisibility(View.GONE);
+        }
+
+        //Changement d'icône du bouton "Mode".
+        bt_switch_mode.setImageResource(btModeIcon);
+    }
+}

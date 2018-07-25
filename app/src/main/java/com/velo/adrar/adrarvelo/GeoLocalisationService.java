@@ -46,7 +46,7 @@ public class GeoLocalisationService extends Service implements LocationListener 
 
     @Override
     public void onLocationChanged(Location location) {
-        BusApplication.getBus().post(location);
+        VeloApplication.getBus().post(location);
     }
 
     @Override

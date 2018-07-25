@@ -1,6 +1,7 @@
 package com.velo.adrar.adrarvelo;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,7 +36,7 @@ public class WebServiceUtils {
         return stations;
     }
 
-    public static Object getRoutePolyline(Location location, VeloStation veloStation, Options options) throws Exception {
+    public static String getRoutePolyline(Location location, VeloStation veloStation, Options options) throws Exception {
 
         String urlRoute = GET_ROUTE_BASE_URL + "origin=" + location.getLatitude() + "," + location.getLongitude() + "&destination=" + veloStation.getPosition().latitude + "," + veloStation.getPosition().longitude;
         if (options.getMode() == ON_FOOT_MODE) {
@@ -47,6 +48,9 @@ public class WebServiceUtils {
         Response response = OkHttpUtils.sendGetOkHttpRequest(urlRoute);
         InputStreamReader isr = new InputStreamReader(response.body().byteStream());
         RoutePolyline routePolyline = gson.fromJson(isr, RoutePolyline.class);
+
+        Log.w("testo", response.toString());
+        Log.w("testo", routePolyline.getRoutes().toString());
 
         return routePolyline.getRoutes().get(0).getOverviewPolyline().getPoints();
     }
